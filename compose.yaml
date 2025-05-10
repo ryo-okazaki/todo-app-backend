@@ -1,0 +1,73 @@
+name: todo-app
+services:
+  express:
+    build:
+      context: docker/express
+      dockerfile: Dockerfile
+    container_name: express
+    env_file:
+      - .env
+    networks:
+      - todo-app
+    ports:
+      - "${EXPRESS_SERVER_PORT:-3001}:3000"
+      - "${EXPRESS_DEBUG_SERVER_PORT:-9229}:9229"
+    volumes:
+      - ${WHERE_SERVER_SRC_DIR:-./src}:/workdir
+
+  postgresql:
+    build:
+      context: docker/postgresql
+      dockerfile: Dockerfile
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    env_file:
+      - .env
+    networks:
+      - todo-app
+    ports:
+      - "${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog
+    networks:
+      - todo-app
+    ports:
+      - "${MAIL_UI_PORT:-8025}:8025"
+      - "${MAIL_SMTP_PORT:-1025}:1025"
+    volumes:
+      - mailhog_data:/home/mailhog
+
+  minio:
+    build:
+      context: docker/minio
+      dockerfile: Dockerfile
+    container_name: minio
+    networks:
+      - todo-app
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+
+volumes:
+  postgres_data:
+  minio_data:
+  mailhog_data:
+
+
+networks:
+  # need to run `docker network create todo-app`
+  todo-app:
+    external: true
