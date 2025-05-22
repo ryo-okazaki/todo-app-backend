@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 type ConfigValues = {
+  EXPRESS_INTERNAL_SERVER_PORT: number;
   EXPRESS_SERVER_PORT: string;
   FRONT_URL: string;
   SERVER_URL: string;
@@ -16,6 +17,7 @@ type ConfigValues = {
 class Config {
   private static instance: Config;
   private readonly _configs: {
+    EXPRESS_INTERNAL_SERVER_PORT: number;
     EXPRESS_SERVER_PORT: string;
     FRONT_URL: string;
     SERVER_URL: string;
@@ -36,6 +38,7 @@ class Config {
 
     this._configs = {
       // 環境変数
+      EXPRESS_INTERNAL_SERVER_PORT: 3000,
       EXPRESS_SERVER_PORT: process.env.EXPRESS_SERVER_PORT,
       FRONT_URL: process.env.FRONT_URL,
       SERVER_URL: process.env.SERVER_URL,
