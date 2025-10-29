@@ -26,21 +26,23 @@ class UserRepository {
   async createUser(userData) {
     const verificationToken = uuidv4();
 
-    return prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         ...userData,
         status: UserStatus.PENDING,
-        token: {
+        verificationToken: {
           create: {
             token: verificationToken,
             status: VerifyTokenStatus.ACTIVATING,
           }
         }
-      },
-      include: {
-        token: true,
       }
     });
+
+    return {
+      ...user,
+      token: verificationToken,
+    };
   }
 
   async activateUser(userId) {
@@ -59,6 +61,72 @@ class UserRepository {
         }
       });
     })
+  }
+
+  async savePasswordResetToken(userId: number, token: string, expiry: Date) {
+    // 既存のアクティブなトークンを無効化
+    await prisma.passwordResetToken.updateMany({
+      where: {
+        userId,
+        status: 1,
+      },
+      data: {
+        status: 0,
+      }
+    });
+
+    // 新しいトークンを作成
+    await prisma.passwordResetToken.create({
+      data: {
+        userId,
+        token,
+        expiredAt: expiry,
+        status: 1,
+      }
+    });
+  }
+
+  async findUserByPasswordResetToken(token: string) {
+    const resetToken = await prisma.passwordResetToken.findFirst({
+      where: {
+        token,
+        status: 1,
+        expiredAt: {
+          gt: new Date()
+        }
+      },
+      include: {
+        user: true,
+      }
+    });
+
+    if (!resetToken) {
+      return null;
+    }
+
+    return {
+      ...resetToken.user,
+      resetTokenExpiry: resetToken.expiredAt
+    };
+  }
+
+  async updatePassword(userId: number, hashedPassword: string) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+      }
+    });
+  }
+
+  async clearPasswordResetToken(userId: number) {
+    // トークンのstatusを無効化(0)に設定
+    await prisma.passwordResetToken.updateMany({
+      where: { userId },
+      data: {
+        status: 0, // 無効化
+      }
+    });
   }
 }
 

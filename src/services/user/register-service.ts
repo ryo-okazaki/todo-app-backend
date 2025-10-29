@@ -39,12 +39,11 @@ class RegisterService
       status: UserStatus.PENDING,
     });
     console.log("created user", newUser);
-    console.log("token", newUser.token);
 
     // 確認メール送信
     await mailService.sendVerificationEmail(
       newUser.email,
-      newUser.token.token,
+      newUser.token,
     );
 
     // パスワードを除外したユーザー情報を返す
