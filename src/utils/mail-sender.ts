@@ -16,8 +16,8 @@ class MailService {
   }
 
   async sendVerificationEmail(email: string, token: string): Promise<void> {
-    const baseUrl = process.env.APP_URL || 'http://localhost:3001';
-    const verificationUrl = `${baseUrl}/api/user/verify/${token}`;
+    const baseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:3000';
+    const verificationUrl = `${baseUrl}/verify_account?token=${token}`;
 
     await this.transporter.sendMail({
       from: process.env.MAIL_FROM || 'noreply@example.com',
