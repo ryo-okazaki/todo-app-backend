@@ -18,7 +18,7 @@ userRoutes.post('/login', userController.login);
 userRoutes.post('/register', userController.register);
 userRoutes.post('/reset_password/request', userController.resetPasswordRequest);
 userRoutes.post('/reset_password/confirm', userController.resetPasswordConfirm);
-userRoutes.get('/verify/:token', userController.verifyToken);
+userRoutes.post('/verify/:token', userController.verifyToken);
 userRoutes.get('', authenticateToken, userController.get);
 
 apiRoutes.use('/todo', todoRoutes);
