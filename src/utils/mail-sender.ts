@@ -33,6 +33,25 @@ class MailService {
       `,
     });
   }
+
+  async sendPasswordResetEmail(email: string, token: string): Promise<void> {
+    const baseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:3000';
+    const resetUrl = `${baseUrl}/reset_password?token=${token}`;
+
+    await this.transporter.sendMail({
+      from: process.env.MAIL_FROM || 'noreply@example.com',
+      to: email,
+      subject: 'パスワードリセット',
+      text: `パスワードリセットするには、以下のリンクをクリックしてください：${resetUrl}`,
+      html: `
+        <div>
+          <h1>パスワードリセット</h1>
+          <p>パスワードリセットするには、以下のリンクをクリックしてください：</p>
+          <a href="${resetUrl}">パスワードリセットする</a>
+        </div>
+      `,
+    });
+  }
 }
 
 export default new MailService();
