@@ -3,6 +3,7 @@ import getService from "../services/user/get-service";
 import registerService from "../services/user/register-service";
 import verifyTokenService from "../services/user/verify-token-service";
 import resetPasswordRequestService from "../services/user/reset-password-request-service";
+import resetPasswordConfirmService from "../services/user/reset-password-confirm-service";
 
 
 class userController {
@@ -46,6 +47,18 @@ class userController {
     console.log('user controller()');
     try {
       const result = await resetPasswordRequestService.handle(req.body);
+      console.log('result:', result);
+      return res.json(result);
+    } catch (error) {
+      console.error(error);
+      return res.status(400).json({ error: error.message });
+    }
+  }
+
+  async resetPasswordConfirm(req, res) {
+    console.log('user controller()');
+    try {
+      const result = await resetPasswordConfirmService.handle(req.body);
       console.log('result:', result);
       return res.json(result);
     } catch (error) {
