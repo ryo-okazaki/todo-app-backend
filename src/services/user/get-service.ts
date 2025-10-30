@@ -4,9 +4,13 @@ import userRepository from "../../repositories/user-repository";
 class GetUserService
 {
   async handle(request) {
-    console.log("Getting todos");
+    console.log("Getting user");
 
-    return await userRepository.findUserByToken(request.token);
+    const user = await userRepository.findUserByToken(request.token);
+
+    const { password, ...userWithoutPassword } = user;
+
+    return userWithoutPassword;
   }
 }
 
