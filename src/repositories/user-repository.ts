@@ -45,6 +45,15 @@ class UserRepository {
     };
   }
 
+  async updateUser({ id, ...attr }) {
+    return prisma.user.update({
+      where: {id},
+      data: {
+        ...attr,
+      }
+    });
+  }
+
   async activateUser(userId) {
     await prisma.$transaction(async (tx) => {
       await tx.user.update({

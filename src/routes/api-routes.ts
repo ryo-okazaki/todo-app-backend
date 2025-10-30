@@ -2,7 +2,7 @@ import { Router } from 'express';
 import todoController from "../controllers/todo-controller";
 import userController from "../controllers/user-controller";
 import { authenticateToken } from '../middleware/auth-middleware';
-import { uploadMultiple } from '../middleware/upload-middleware';
+import { uploadMultiple, uploadSingle } from "../middleware/upload-middleware";
 
 const apiRoutes = Router();
 const todoRoutes = Router();
@@ -16,6 +16,7 @@ todoRoutes.put('/:id', authenticateToken, uploadMultiple, todoController.updateT
 
 userRoutes.post('/login', userController.login);
 userRoutes.post('/register', userController.register);
+userRoutes.put('/', authenticateToken, uploadSingle, userController.update);
 userRoutes.post('/reset_password/request', userController.resetPasswordRequest);
 userRoutes.post('/reset_password/confirm', userController.resetPasswordConfirm);
 userRoutes.post('/verify/:token', userController.verifyToken);
