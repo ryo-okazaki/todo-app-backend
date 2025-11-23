@@ -6,6 +6,12 @@ import { UserStatus } from "../enums/user-status";
 
 
 class UserRepository {
+  async findUserById(userId) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+    });
+  }
+
   async findUserByEmail(email) {
     return prisma.user.findUnique({
       where: { email },
@@ -21,6 +27,12 @@ class UserRepository {
     });
 
     return userToken.user;
+  }
+
+  async findUserBySub(sub) {
+    return prisma.user.findUnique({
+      where: { sub },
+    });
   }
 
   async createUser(userData) {
@@ -43,6 +55,15 @@ class UserRepository {
       ...user,
       token: verificationToken,
     };
+  }
+
+  async createUserWithSso(userData) {
+    return prisma.user.create({
+      data: {
+        ...userData,
+        status: UserStatus.ACTIVATED,
+      }
+    });
   }
 
   async updateUser({ id, ...attr }) {
@@ -135,6 +156,13 @@ class UserRepository {
       data: {
         status: 0, // 無効化
       }
+    });
+  }
+
+  async linkSsoToUser(userId: number, sub: string) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { sub },
     });
   }
 }
