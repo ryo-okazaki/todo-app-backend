@@ -17,6 +17,8 @@ todoRoutes.put('/:id', authenticateToken, uploadMultiple, todoController.updateT
 userRoutes.post('/login', userController.login);
 userRoutes.post('/register', userController.register);
 userRoutes.put('/', authenticateToken, uploadSingle, userController.update);
+userRoutes.put('/sso_sync', authenticateToken, userController.ssoSync);
+
 userRoutes.post('/reset_password/request', userController.resetPasswordRequest);
 userRoutes.post('/reset_password/confirm', userController.resetPasswordConfirm);
 userRoutes.post('/verify/:token', userController.verifyToken);
