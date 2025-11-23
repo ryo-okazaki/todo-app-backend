@@ -5,6 +5,7 @@ import updateService from "../services/user/update-service";
 import verifyTokenService from "../services/user/verify-token-service";
 import resetPasswordRequestService from "../services/user/reset-password-request-service";
 import resetPasswordConfirmService from "../services/user/reset-password-confirm-service";
+import ssoSyncService from "../services/user/sso-sync-service";
 
 
 class userController {
@@ -86,6 +87,18 @@ class userController {
     console.log('user controller()');
     try {
       const result = await verifyTokenService.handle(req.params);
+      console.log('result:', result);
+      return res.json(result);
+    } catch (error) {
+      console.error(error);
+      return res.status(400).json({ error: error.message });
+    }
+  }
+
+  async ssoSync(req, res) {
+    console.log('user controller()');
+    try {
+      const result = await ssoSyncService.handle(req);
       console.log('result:', result);
       return res.json(result);
     } catch (error) {
