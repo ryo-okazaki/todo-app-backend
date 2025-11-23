@@ -10,6 +10,8 @@ declare global {
 
 export interface UserPayload {
   userId: number;
-  username: string;
+  sub?: string;
   email: string;
+  name: string;
+  authType: 'todo-app' | 'keycloak';
 }
