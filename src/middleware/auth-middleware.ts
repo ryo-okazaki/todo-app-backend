@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { UserPayload } from "../types";
+import userRepository from "../repositories/user-repository";
 
 // 環境変数の検証
 interface KeycloakConfig {
@@ -96,15 +97,17 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
           // issuer: `${keycloakConfig.url}/realms/${keycloakConfig.realm}`, // ToDo: issuerはkeycloakのリバプロを導入後に検証する
           audience: keycloakConfig.clientId,
         },
-        (err, decoded) => {
+        async (err, decoded) => {
           if (err) {
             reject(err);
           } else {
             const payload = decoded as any;
 
+            const user = await userRepository.findUserBySub(payload.sub);
+
             // KeycloakのペイロードをUserPayload形式に変換
             resolve({
-              userId: 0,
+              userId: user.id,
               sub: payload.sub,
               email: payload.email,
               name: payload.name || payload.preferred_username,
