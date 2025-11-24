@@ -19,7 +19,7 @@ model User {
   authType   Int      @map("auth_type") @db.SmallInt @default(1)
   name       String   @db.VarChar(255)
   email      String   @unique
-  password   String
+  password   String?
   status     Int      @db.SmallInt
   avatar_url String?  @map("avatar_url")
   createdAt  DateTime @default(now()) @map("created_at")
