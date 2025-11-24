@@ -50,7 +50,7 @@ class SsoSyncService
       email,
       name,
       sub,
-      authType: 'keycloak',
+      authType: 1, // authType: 'keycloak' ToDo: Enum化する
     });
 
     return {
