@@ -9,18 +9,20 @@ interface KeycloakConfig {
   url: string;
   realm: string;
   clientId: string;
+  clientUrl: string;
 }
 
 function getKeycloakConfig(): KeycloakConfig {
   const url = process.env.KEYCLOAK_BASE_URL;
   const realm = process.env.KEYCLOAK_REALM;
   const clientId = process.env.KEYCLOAK_BACKEND_CLIENT_ID;
+  const clientUrl = process.env.KEYCLOAK_CLIENT_URL;
 
-  if (!url || !realm || !clientId) {
+  if (!url || !realm || !clientId || !clientUrl) {
     throw new Error('Keycloak configuration is missing');
   }
 
-  return { url, realm, clientId };
+  return { url, realm, clientId, clientUrl };
 }
 
 const keycloakConfig = getKeycloakConfig();
@@ -63,7 +65,6 @@ function getKeycloakPublicKey(header: jwt.JwtHeader): Promise<string> {
 async function verifyKeycloakToken(token: string): Promise<UserPayload> {
   return new Promise(async (resolve, reject) => {
     try {
-      // まずヘッダーをデコード
       const decoded = jwt.decode(token, { complete: true });
       if (!decoded || !decoded.header.kid) {
         return reject(new Error('Invalid token format'));
@@ -72,29 +73,25 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
       const payload = decoded.payload as any;
       console.log('Token Issuer:', payload.iss);
 
-      // 公開鍵を取得
       const publicKey = await getKeycloakPublicKey(decoded.header);
 
-      // Issuerの検証
-      // ToDo: implementing
-      // issuerはkeycloakのリバプロを導入後に検証する
-      const validIssuers = [
-        `${keycloakConfig.url}/realms/${keycloakConfig.realm}`,   // http://auth-keycloak:8080/realms/...
-        `${process.env.KEYCLOAK_CLIENT_URL}/realms/${keycloakConfig.realm}`, // http://localhost:8080/realms/...
-      ];
+      // 期待されるIssuer（ブラウザがアクセスするURL）
+      const expectedIssuer = `${keycloakConfig.clientUrl}/realms/${keycloakConfig.realm}`;
 
-      if (!validIssuers.includes(payload.iss)) {
-        console.log('Invalid token:', payload);
-        return reject(new Error(`Invalid issuer: ${payload.iss}`));
+      console.log('Expected Issuer:', expectedIssuer);
+      console.log('Token Issuer:', payload.iss);
+
+      if (payload.iss !== expectedIssuer) {
+        return reject(new Error(`Invalid issuer: ${payload.iss}. Expected: ${expectedIssuer}`));
       }
 
-      // トークンを検証（ベストプラクティス: 厳格な検証）
+      // トークンを検証
       jwt.verify(
         token,
         publicKey,
         {
           algorithms: ['RS256'],
-          // issuer: `${keycloakConfig.url}/realms/${keycloakConfig.realm}`, // ToDo: issuerはkeycloakのリバプロを導入後に検証する
+          issuer: expectedIssuer,
           audience: keycloakConfig.clientId,
         },
         async (err, decoded) => {
@@ -102,10 +99,8 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
             reject(err);
           } else {
             const payload = decoded as any;
-
             const user = await userRepository.findUserBySub(payload.sub);
 
-            // KeycloakのペイロードをUserPayload形式に変換
             resolve({
               userId: user.id,
               sub: payload.sub,
