@@ -102,7 +102,7 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
             const user = await userRepository.findUserBySub(payload.sub);
 
             resolve({
-              userId: user.id,
+              userId: user?.id, // 既存ユーザーのID（存在する場合）ToDo: 要検討
               sub: payload.sub,
               email: payload.email,
               name: payload.name || payload.preferred_username,
