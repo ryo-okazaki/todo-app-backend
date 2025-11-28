@@ -10,6 +10,7 @@ interface KeycloakConfig {
   realm: string;
   clientId: string;
   clientUrl: string;
+  baseUrl: string;
 }
 
 function getKeycloakConfig(): KeycloakConfig {
@@ -17,12 +18,13 @@ function getKeycloakConfig(): KeycloakConfig {
   const realm = process.env.KEYCLOAK_REALM;
   const clientId = process.env.KEYCLOAK_BACKEND_CLIENT_ID;
   const clientUrl = process.env.KEYCLOAK_CLIENT_URL;
+  const baseUrl = process.env.KEYCLOAK_BASE_URL;
 
   if (!url || !realm || !clientId || !clientUrl) {
     throw new Error('Keycloak configuration is missing');
   }
 
-  return { url, realm, clientId, clientUrl };
+  return { url, realm, clientId, clientUrl, baseUrl };
 }
 
 const keycloakConfig = getKeycloakConfig();
@@ -95,14 +97,48 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
             reject(err);
           } else {
             const payload = decoded as any;
-            const user = await userRepository.findUserBySub(payload.sub);
+
+            // subが存在しない場合はユーザー情報エンドポイントから取得
+            let sub = payload.sub;
+            let email = payload.email;
+            let name = payload.name || payload.preferred_username;
+
+            if (!sub) {
+              try {
+                const userInfoResponse = await fetch(
+                  `${keycloakConfig.baseUrl}/realms/${keycloakConfig.realm}/protocol/openid-connect/userinfo`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+
+                if (userInfoResponse.ok) {
+                  const userInfo = await userInfoResponse.json();
+                  console.log('userInfo:', userInfo);
+                  sub = userInfo.sub;
+                  email = email || userInfo.email;
+                  name = name || userInfo.name || userInfo.preferred_username;
+                }
+              } catch (fetchError) {
+                console.error('Failed to fetch user info:', fetchError);
+                return reject(new Error('Unable to get user information'));
+              }
+            }
+
+            if (!sub) {
+              return reject(new Error('Sub claim is missing from token'));
+            }
+
+            const user = await userRepository.findUserBySub(sub);
 
             resolve({
               userId: user?.id, // 既存ユーザーのID（存在する場合）ToDo: 要検討
-              sub: payload.sub,
-              email: payload.email,
-              name: payload.name || payload.preferred_username,
-              authType: 'keycloak',
+              sub: sub,
+              email: email,
+              name: name,
+              authType: 1, // 'keycloak' ToDo: Enum化する
             });
           }
         }
@@ -130,7 +166,7 @@ function verifyTodoAppToken(token: string): UserPayload {
     sub: undefined,
     email: decoded.email,
     name: decoded.name,
-    authType: 'todo-app',
+    authType: 0, // 'local' ToDo: Enum化する
   };
 }
 
@@ -152,6 +188,7 @@ export const authenticateToken = async (
 ): Promise<void> => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
+  console.log('### Token ###');
 
   if (!token) {
     res.status(401).json({ error: '認証トークンがありません' });
