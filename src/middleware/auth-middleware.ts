@@ -71,15 +71,11 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
       }
 
       const payload = decoded.payload as any;
-      console.log('Token Issuer:', payload.iss);
 
       const publicKey = await getKeycloakPublicKey(decoded.header);
 
       // 期待されるIssuer（ブラウザがアクセスするURL）
       const expectedIssuer = `${keycloakConfig.clientUrl}/realms/${keycloakConfig.realm}`;
-
-      console.log('Expected Issuer:', expectedIssuer);
-      console.log('Token Issuer:', payload.iss);
 
       if (payload.iss !== expectedIssuer) {
         return reject(new Error(`Invalid issuer: ${payload.iss}. Expected: ${expectedIssuer}`));
