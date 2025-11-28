@@ -13,5 +13,5 @@ export interface UserPayload {
   sub?: string;
   email: string;
   name: string;
-  authType: 'todo-app' | 'keycloak';
+  authType: number; // 0: local, 1: keycloak
 }
