@@ -50,7 +50,7 @@ class userController {
   async get(req, res) {
     console.log('user controller()');
     try {
-      const result = await getService.handle(req.params);
+      const result = await getService.handle(req);
       console.log('result:', result);
       return res.json(result);
     } catch (error) {
