@@ -22,27 +22,29 @@ class SsoSyncService
     }
 
     // 2. emailで既存のToDoアプリユーザーを検索
-    user = await userRepository.findUserByEmail(email); // auth_typeでも検索する
+    if (email) {
+      user = await userRepository.findUserByEmail(email); // auth_typeでも検索する
 
-    if (user) {
-      // ★既存ユーザーが見つかった → 紐付け
-      const existingUser = user;
+      if (user) {
+        // ★既存ユーザーが見つかった → 紐付け
+        const existingUser = user;
 
-      await userRepository.linkSsoToUser(existingUser.id, sub);
+        await userRepository.linkSsoToUser(existingUser.id, sub);
 
-      // 監査ログ
-      // await userRepository.createAuditLog({
-      //   userId: existingUser.id,
-      //   action: 'sso_link',
-      //   description: `KeycloakユーザーID ${keycloakUserId} と連携`,
-      // });
+        // 監査ログ
+        // await userRepository.createAuditLog({
+        //   userId: existingUser.id,
+        //   action: 'sso_link',
+        //   description: `KeycloakユーザーID ${keycloakUserId} と連携`,
+        // });
 
-      const updatedUser = await userRepository.findUserById(existingUser.id);
+        const updatedUser = await userRepository.findUserById(existingUser.id);
 
-      return {
-        user: updatedUser,
-        message: '既存のToDoアプリアカウントと連携しました',
-      };
+        return {
+          user: updatedUser,
+          message: '既存のToDoアプリアカウントと連携しました',
+        };
+      }
     }
 
     // 3. 新規ユーザー作成
