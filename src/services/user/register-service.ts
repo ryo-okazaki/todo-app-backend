@@ -37,6 +37,7 @@ class RegisterService
       password: hashedPassword,
       name: request.name,
       status: UserStatus.PENDING,
+      authType: 0, // authType: 'local' ToDo: Enum化する
     });
     console.log("created user", newUser);
 
