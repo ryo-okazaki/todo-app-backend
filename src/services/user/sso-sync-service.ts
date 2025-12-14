@@ -3,7 +3,6 @@ import userRepository from "../../repositories/user-repository";
 class SsoSyncService
 {
   async handle(request) {
-    console.log("syncing sso user", request.user);
     const { sub, email, name, authType } = request.user;
 
     if (authType !== 1) { // 1: 'keycloak' ToDo: Enum化する

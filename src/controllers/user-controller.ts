@@ -10,10 +10,11 @@ import ssoSyncService from "../services/user/sso-sync-service";
 
 class userController {
   async login(req, res) {
-    console.log('user controller()');
+    console.log(`[${req.requestId}] user controller login() start`);
+    console.log(`[${req.requestId}] req.body:`, req.body);
     try {
       const result = await loginService.handle(req.body);
-      console.log('result:', result);
+      console.log(`[${req.requestId}] user controller login() result:`, result);
       return res.json(result);
     } catch (error) {
       console.error(error);
@@ -48,10 +49,11 @@ class userController {
   }
 
   async get(req, res) {
-    console.log('user controller()');
+    console.log(`[${req.requestId}] user controller get() start`);
+    console.log(`[${req.requestId}] req.user:`, req.user);
     try {
       const result = await getService.handle(req);
-      console.log('result:', result);
+      console.log(`[${req.requestId}] user controller get() result:`, result);
       return res.json(result);
     } catch (error) {
       console.error(error);
@@ -96,10 +98,11 @@ class userController {
   }
 
   async ssoSync(req, res) {
-    console.log('user controller()');
+    console.log(`[${req.requestId}] user controller ssoSync() start`);
+    console.log(`[${req.requestId}] req.body:`, req.body);
     try {
       const result = await ssoSyncService.handle(req);
-      console.log('result:', result);
+      console.log(`[${req.requestId}] user controller ssoSync() result:`, result);
       return res.json(result);
     } catch (error) {
       console.error(error);

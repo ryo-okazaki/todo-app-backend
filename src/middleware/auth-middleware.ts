@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+import { v4 as uuidv4 } from "uuid";
 import { UserPayload } from "../types";
 import userRepository from "../repositories/user-repository";
 
@@ -64,7 +65,7 @@ function getKeycloakPublicKey(header: jwt.JwtHeader): Promise<string> {
 }
 
 // Keycloakトークンの検証
-async function verifyKeycloakToken(token: string): Promise<UserPayload> {
+async function verifyKeycloakToken(token: string, requestId: string): Promise<UserPayload> {
   return new Promise(async (resolve, reject) => {
     try {
       const decoded = jwt.decode(token, { complete: true });
@@ -73,6 +74,7 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
       }
 
       const payload = decoded.payload as any;
+      console.log(`[${requestId}] Keycloak token payload:`, payload);
 
       const publicKey = await getKeycloakPublicKey(decoded.header);
 
@@ -116,7 +118,7 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
 
                 if (userInfoResponse.ok) {
                   const userInfo = await userInfoResponse.json();
-                  console.log('userInfo:', userInfo);
+                  console.log(`[${requestId}] Fetched user info:`, userInfo);
                   sub = userInfo.sub;
                   email = email || userInfo.email;
                   name = name || userInfo.name || userInfo.preferred_username;
@@ -151,7 +153,7 @@ async function verifyKeycloakToken(token: string): Promise<UserPayload> {
 }
 
 // 既存のToDoアプリトークン検証
-function verifyTodoAppToken(token: string): UserPayload {
+function verifyTodoAppToken(token: string, requestId: string): UserPayload {
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
     throw new Error('JWT_SECRET is not configured');
@@ -186,9 +188,12 @@ export const authenticateToken = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  const requestId = uuidv4();
+  console.log(`[${requestId}] API endpoint:`, req.originalUrl);
+
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  console.log('### Token ###');
+  console.log(`[${requestId}] Authenticating token:`, token);
 
   if (!token) {
     res.status(401).json({ error: '認証トークンがありません' });
@@ -197,7 +202,7 @@ export const authenticateToken = async (
 
   try {
     const issuer = getTokenIssuer(token);
-    console.log('Issuer:', issuer);
+    console.log(`[${requestId}] Token issuer:`, issuer);
 
     if (!issuer) {
       res.status(401).json({ error: '無効なトークン形式です' });
@@ -209,13 +214,14 @@ export const authenticateToken = async (
     // Issuerに基づいて検証方法を切り替え
     if (issuer.includes('/realms/')) {
       // Keycloakトークン（audience検証を含む厳格な検証）
-      user = await verifyKeycloakToken(token);
+      user = await verifyKeycloakToken(token, requestId);
     } else {
       // 既存のToDoアプリトークン
-      user = verifyTodoAppToken(token);
+      user = verifyTodoAppToken(token, requestId);
     }
 
     req.user = user;
+    req["requestId"] = uuidv4();
     next();
 
   } catch (err) {
