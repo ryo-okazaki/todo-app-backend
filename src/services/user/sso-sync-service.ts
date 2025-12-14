@@ -6,7 +6,7 @@ class SsoSyncService
     console.log("syncing sso user", request.user);
     const { sub, email, name, authType } = request.user;
 
-    if (authType !== 'keycloak') {
+    if (authType !== 1) { // 1: 'keycloak' ToDo: Enum化する
       return { error: 'Keycloakトークンが必要です' };
     }
 
