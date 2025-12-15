@@ -1,10 +1,11 @@
 {
-  "name": "src",
+  "name": "todo-app-express",
   "version": "1.0.0",
   "main": "main.ts",
   "scripts": {
-    "start": "node src/server.ts",
-    "debug-start": "tsx watch --inspect=0.0.0.0:9229 src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch --inspect=0.0.0.0:9229 src/server.ts",
     "migrate:dev": "prisma migrate dev",
     "migrate:reset": "prisma migrate reset",
     "migrate:force-reset": "prisma db push --force-reset",
