@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "main.ts",
   "scripts": {
-    "start": "node server.ts",
-    "debug-start": "tsx watch --inspect=0.0.0.0:9229 server.ts",
+    "start": "node src/server.ts",
+    "debug-start": "tsx watch --inspect=0.0.0.0:9229 src/server.ts",
     "migrate:dev": "prisma migrate dev",
     "migrate:reset": "prisma migrate reset",
     "migrate:force-reset": "prisma db push --force-reset",

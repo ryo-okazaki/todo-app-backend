@@ -1,11 +1,10 @@
 #!/bin/sh
 
 # install npm packages
-cd /workdir/src && npm install
+cd /workdir && npm install
 
 # init prisma client
 npx prisma generate
-
 
 # start express server
 if [ "$EXPRESS_SERVER_DEBUG" = "1" ]; then
