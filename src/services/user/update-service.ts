@@ -31,7 +31,7 @@ class UpdateService
     });
 
     // パスワードを除外したユーザー情報を返す
-    const { password: _, verificationToken: __, ...userWithoutPassword } = newUser;
+    const { password: _, ...userWithoutPassword } = newUser;
 
     return userWithoutPassword;
   }

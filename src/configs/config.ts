@@ -12,6 +12,11 @@ type ConfigValues = {
   S3_REGION: string;
   LOCAL_S3_ACCESS_KEY: string;
   LOCAL_S3_SECRET_KEY: string;
+  LOCAL_S3_ENDPOINT: string;
+  KEYCLOAK_BASE_URL: string;
+  KEYCLOAK_CLIENT_URL: string;
+  KEYCLOAK_REALM: string;
+  KEYCLOAK_CLIENT_ID: string;
 };
 
 class Config {
@@ -28,6 +33,10 @@ class Config {
     LOCAL_S3_ACCESS_KEY: string;
     LOCAL_S3_SECRET_KEY: string;
     LOCAL_S3_ENDPOINT: string;
+    KEYCLOAK_BASE_URL: string;
+    KEYCLOAK_CLIENT_URL: string;
+    KEYCLOAK_REALM: string;
+    KEYCLOAK_CLIENT_ID: string;
   };
 
   constructor() {
@@ -49,12 +58,16 @@ class Config {
       LOCAL_S3_ACCESS_KEY: process.env.LOCAL_S3_ACCESS_KEY,
       LOCAL_S3_SECRET_KEY: process.env.LOCAL_S3_SECRET_KEY,
       LOCAL_S3_ENDPOINT: process.env.LOCAL_S3_ENDPOINT,
+      KEYCLOAK_BASE_URL: process.env.KEYCLOAK_BASE_URL,
+      KEYCLOAK_CLIENT_URL: process.env.KEYCLOAK_CLIENT_URL,
+      KEYCLOAK_REALM: process.env.KEYCLOAK_REALM,
+      KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
     };
 
     Config.instance = this;
   }
 
-  get<K extends keyof ConfigValues>(key: K): string {
+  get<K extends keyof ConfigValues>(key: K): ConfigValues[K] {
     if (!(key in this._configs)) {
       throw new Error(`設定キー "${key}" が見つかりません`);
     }

@@ -48,7 +48,7 @@ class RegisterService
     );
 
     // パスワードを除外したユーザー情報を返す
-    const { password: _, verificationToken: __, ...userWithoutPassword } = newUser;
+    const { password: _, token: __, ...userWithoutPassword } = newUser;
 
     return userWithoutPassword;
   }
