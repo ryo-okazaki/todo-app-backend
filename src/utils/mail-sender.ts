@@ -9,7 +9,7 @@ class MailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST || 'mail-mailhog',
+      host: process.env.MAIL_HOST || 'todo-mailhog',
       port: parseInt(process.env.MAIL_PORT || '1025'),
       secure: false,
     });
