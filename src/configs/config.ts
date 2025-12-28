@@ -14,7 +14,7 @@ type ConfigValues = {
   KEYCLOAK_BASE_URL: string;
   KEYCLOAK_CLIENT_URL: string;
   KEYCLOAK_REALM: string;
-  KEYCLOAK_CLIENT_ID: string;
+  KEYCLOAK_BACKEND_CLIENT_ID: string;
 };
 
 class Config {
@@ -32,7 +32,7 @@ class Config {
     KEYCLOAK_BASE_URL: string;
     KEYCLOAK_CLIENT_URL: string;
     KEYCLOAK_REALM: string;
-    KEYCLOAK_CLIENT_ID: string;
+    KEYCLOAK_BACKEND_CLIENT_ID: string;
   };
 
   constructor() {
@@ -55,7 +55,7 @@ class Config {
       KEYCLOAK_BASE_URL: process.env.KEYCLOAK_BASE_URL,
       KEYCLOAK_CLIENT_URL: process.env.KEYCLOAK_CLIENT_URL,
       KEYCLOAK_REALM: process.env.KEYCLOAK_REALM,
-      KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
+      KEYCLOAK_BACKEND_CLIENT_ID: process.env.KEYCLOAK_BACKEND_CLIENT_ID,
     };
 
     Config.instance = this;
