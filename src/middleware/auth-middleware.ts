@@ -10,20 +10,18 @@ interface KeycloakConfig {
   realm: string;
   clientId: string;
   clientUrl: string;
-  baseUrl: string;
 }
 
 function getKeycloakConfig(): KeycloakConfig {
   const realm = process.env.KEYCLOAK_REALM;
   const clientId = process.env.KEYCLOAK_BACKEND_CLIENT_ID;
   const clientUrl = process.env.KEYCLOAK_CLIENT_URL;
-  const baseUrl = process.env.KEYCLOAK_BASE_URL;
 
   if (!realm || !clientId || !clientUrl) {
     throw new Error('Keycloak configuration is missing');
   }
 
-  return { realm, clientId, clientUrl, baseUrl };
+  return { realm, clientId, clientUrl };
 }
 
 const keycloakConfig = getKeycloakConfig();
