@@ -7,7 +7,6 @@ import userRepository from "../repositories/user-repository";
 
 // 環境変数の検証
 interface KeycloakConfig {
-  url: string;
   realm: string;
   clientId: string;
   clientUrl: string;
@@ -15,23 +14,22 @@ interface KeycloakConfig {
 }
 
 function getKeycloakConfig(): KeycloakConfig {
-  const url = process.env.KEYCLOAK_BASE_URL;
   const realm = process.env.KEYCLOAK_REALM;
   const clientId = process.env.KEYCLOAK_BACKEND_CLIENT_ID;
   const clientUrl = process.env.KEYCLOAK_CLIENT_URL;
   const baseUrl = process.env.KEYCLOAK_BASE_URL;
 
-  if (!url || !realm || !clientId || !clientUrl) {
+  if (!realm || !clientId || !clientUrl) {
     throw new Error('Keycloak configuration is missing');
   }
 
-  return { url, realm, clientId, clientUrl, baseUrl };
+  return { realm, clientId, clientUrl, baseUrl };
 }
 
 const keycloakConfig = getKeycloakConfig();
 
 // Keycloak公開鍵取得用クライアント
-const jwksUri = `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/certs`;
+const jwksUri = `${keycloakConfig.baseUrl}/realms/${keycloakConfig.realm}/protocol/openid-connect/certs`;
 console.log('JWKS URI:', jwksUri);
 
 const keycloakClient = jwksClient({
