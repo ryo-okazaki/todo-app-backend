@@ -29,7 +29,7 @@ function getKeycloakConfig(): KeycloakConfig {
 const keycloakConfig = getKeycloakConfig();
 
 // Keycloak公開鍵取得用クライアント
-const jwksUri = `${keycloakConfig.baseUrl}/realms/${keycloakConfig.realm}/protocol/openid-connect/certs`;
+const jwksUri = `${keycloakConfig.clientUrl}/realms/${keycloakConfig.realm}/protocol/openid-connect/certs`;
 console.log('JWKS URI:', jwksUri);
 
 const keycloakClient = jwksClient({
@@ -106,7 +106,7 @@ async function verifyKeycloakToken(token: string, requestId: string): Promise<Us
             if (!sub) {
               try {
                 const userInfoResponse = await fetch(
-                  `${keycloakConfig.baseUrl}/realms/${keycloakConfig.realm}/protocol/openid-connect/userinfo`,
+                  `${keycloakConfig.clientUrl}/realms/${keycloakConfig.realm}/protocol/openid-connect/userinfo`,
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,
