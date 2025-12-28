@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { v4 as uuidv4 } from "uuid";
+import config from "../configs/config";
 import { UserPayload } from "../types";
 import userRepository from "../repositories/user-repository";
 
@@ -13,9 +14,9 @@ interface KeycloakConfig {
 }
 
 function getKeycloakConfig(): KeycloakConfig {
-  const realm = process.env.KEYCLOAK_REALM;
-  const clientId = process.env.KEYCLOAK_BACKEND_CLIENT_ID;
-  const clientUrl = process.env.KEYCLOAK_CLIENT_URL;
+  const realm = config.get("KEYCLOAK_REALM");
+  const clientId = config.get("KEYCLOAK_BACKEND_CLIENT_ID");
+  const clientUrl = config.get("KEYCLOAK_CLIENT_URL");
 
   if (!realm || !clientId || !clientUrl) {
     throw new Error('Keycloak configuration is missing');
