@@ -28,8 +28,8 @@ FROM node:22.15.0-slim AS runner
 
 WORKDIR /app
 
-# Install OpenSSL for Prisma in production
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# Install OpenSSL for Prisma and curl in production
+RUN apt-get update -y && apt-get install -y openssl curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 
