@@ -1,0 +1,81 @@
+@verify_token =
+@access_token =
+
+### API health check
+GET http://localhost:3001/health
+Accept: application/json
+
+### ユーザーログイン
+POST http://localhost:3001/api/user/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "test5@example.com",
+  "password": "password123"
+}
+
+### ユーザー登録
+POST http://localhost:3001/api/user/register
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "test5@example.com",
+    "password": "password123",
+    "name": "Test User"
+}
+
+### ユーザー取得
+GET http://localhost:3001/api/user
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+### ユーザー メール検証
+GET http://localhost:3001/api/user/verify/{{verify_token}}
+Accept: application/json
+Content-Type: application/json
+
+### ToDo 取得
+GET http://localhost:3001/api/todo
+Accept: application/json
+Authorization: Bearer {{access_token}}
+
+### ToDo 取得
+@todoId = 1
+GET http://localhost:3001/api/todo/{{todoId}}
+Accept: application/json
+Authorization: Bearer {{access_token}}
+
+### ToDo 作成
+POST http://localhost:3001/api/todo
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "New Todo"
+}
+
+### ToDo 更新
+PUT http://localhost:3001/api/todo/{{todoId}}
+Authorization: Bearer {{access_token}}
+Content-Type: multipart/form-data; boundary=----CustomBoundary
+
+------CustomBoundary
+Content-Disposition: form-data; name="title"
+
+テスト画像タイトル
+------CustomBoundary
+Content-Disposition: form-data; name="description"
+
+テスト画像説明
+------CustomBoundary
+Content-Disposition: form-data; name="images"; filename="sample.jpg"
+Content-Type: image/jpeg
+
+< ./images/sample.jpg
+------CustomBoundary--
+
+###
