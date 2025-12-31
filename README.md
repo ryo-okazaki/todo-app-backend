@@ -176,10 +176,10 @@ make bash
 
 ECS へのデプロイは `todo-app-infrastructure` リポジトリで管理されています。
 
-詳細は [todo-app-infrastructure](../todo-app-infrastructure) を参照してください。
+詳細は [todo-app-infrastructure](https://github.com/ryo-okazaki/todo-app-infrastructure) を参照してください。
 
 ## 関連リポジトリ
 
-- [todo-app-infrastructure](../todo-app-infrastructure): インフラストラクチャ（Terraform）
-- [todo-app-next](../todo-app-next): フロントエンド（Next.js）
-- [app-authentication](../app-authentication): 共通認証基盤（Keycloak）
+- [todo-app-infrastructure](https://github.com/ryo-okazaki/todo-app-infrastructure): インフラストラクチャ（Terraform）
+- [todo-app-frontend](https://github.com/ryo-okazaki/todo-app-frontend): フロントエンド（Next.js）
+- [common-auth-system](https://github.com/ryo-okazaki/common-auth-system): 共通認証基盤（Keycloak）
